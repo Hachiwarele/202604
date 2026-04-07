@@ -1,9 +1,13 @@
 // Fetch common header/footer and init nav active state
 (async function(){
+  // helper to load include with fallback
   async function loadInclude(path, id){
     try{
-      const res = await fetch(path);
-      if(!res.ok) return;
+      const res = await fetch(path, {cache: "no-store"});
+      if(!res.ok) {
+        console.warn('include not found', path, res.status);
+        return;
+      }
       const html = await res.text();
       document.getElementById(id).innerHTML = html;
       initNav();
@@ -11,8 +15,18 @@
       console.warn('include load failed', path, e);
     }
   }
-  await loadInclude('/_includes/header.html', 'site-header');
-  await loadInclude('/_includes/footer.html', 'site-footer');
+
+  // compute base path robustly so includes work on subpaths
+  function computeBasePath(){
+    const p = location.pathname;
+    // If path ends with a filename like /202604/index.html -> remove filename
+    if(p.endsWith('/')) return p;
+    return p.replace(/\/[^\/]*$/, '/');
+  }
+  const basePath = computeBasePath();
+
+  await loadInclude(basePath + '_includes/header.html', 'site-header');
+  await loadInclude(basePath + '_includes/footer.html', 'site-footer');
 
   // init nav active
   function initNav(){
@@ -21,7 +35,9 @@
     links.forEach(a=>{
       a.classList.remove('active');
       const href = a.getAttribute('href');
-      if(href === path) a.classList.add('active');
+      // normalize href to absolute-ish for comparison
+      const resolved = new URL(href, location.origin + basePath).pathname.replace(/\/$/, '');
+      if(resolved === path) a.classList.add('active');
     });
   }
 

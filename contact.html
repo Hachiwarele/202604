@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hachi Demo — Contact</title>
+  <meta name="description" content="Contact page. Use the form to reach out." />
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <h1>Contact</h1>
+    <p class="muted">このフォームはデモです。実運用する場合は Formspree や Netlify Forms などを使ってください。</p>
+
+    <form id="contactForm" class="form" onsubmit="return false;">
+      <label>名前<input id="c-name" class="input" required></label>
+      <label>メール<input id="c-email" class="input" type="email" required></label>
+      <label>メッセージ<textarea id="c-message" class="input" required></textarea></label>
+      <div class="form-row">
+        <button class="btn" id="c-send">Send</button>
+        <button class="ghost" type="reset">Reset</button>
+      </div>
+      <p id="c-note" class="muted" aria-live="polite"></p>
+    </form>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="/assets/main.js"></script>
+  <script>
+    // Simple demo handler
+    document.getElementById('c-send').addEventListener('click', ()=>{
+      const name = document.getElementById('c-name').value.trim();
+      const email = document.getElementById('c-email').value.trim();
+      const msg = document.getElementById('c-message').value.trim();
+      if(!name || !email || !msg){ document.getElementById('c-note').textContent = '全て入力してください。'; return; }
+      document.getElementById('c-note').textContent = '送信中…（デモ）';
+      setTimeout(()=>{ document.getElementById('c-note').textContent = '送信完了。デモなので実際には送信されていません。'; }, 900);
+    });
+  </script>
+</body>
+</html>
